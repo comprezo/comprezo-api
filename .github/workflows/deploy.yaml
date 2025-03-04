@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build
+        run: go build -o comprezo main.go
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+          RELEASE_DIR="${{ secrets.REMOTE_PATH }}/releases/$TIMESTAMP"
+          CURRENT_LINK="${{ secrets.REMOTE_PATH }}/current"
+
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << EOF
+            mkdir -p $RELEASE_DIR
+          EOF
+
+          rsync -avz --delete \
+            ./comprezo ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:$RELEASE_DIR/comprezo
+
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << EOF
+            chmod +x $RELEASE_DIR/comprezo
+            ln -sfn $RELEASE_DIR $CURRENT_LINK
+
+             # systemctl --user restart comprezo
+          EOF
