@@ -32,6 +32,8 @@ func REST(handlerFunc HandleFunc) Handler {
 func (h Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	ctx := Context{Res: res, Req: req}
 
+	SetCORSHeaders(res)
+
 	resp, err := h.HandleFunc(ctx)
 	if err != nil {
 		h.SendError(ctx, err)
@@ -58,4 +60,11 @@ func (h Handler) SendError(ctx Context, err error) {
 	}
 
 	h.SendData(ctx, code, ErrorResponse{Error: msg})
+}
+
+func SetCORSHeaders(res http.ResponseWriter) {
+	res.Header().Set("Access-Control-Allow-Origin", "*")
+	res.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	res.Header().Set("Access-Control-Allow-Headers", "accept, content-type")
+	res.Header().Set("Access-Control-Max-Age", "3600")
 }
