@@ -46,5 +46,5 @@ jobs:
             chmod +x $RELEASE_DIR/comprezo
             ln -sfn $RELEASE_DIR $CURRENT_LINK
 
-             # systemctl --user restart comprezo
+             systemctl --user restart comprezo
           EOF
