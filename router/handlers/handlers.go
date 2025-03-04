@@ -3,7 +3,6 @@ package handlers
 import (
 	"comprezo/apperror"
 	"comprezo/handler"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -37,7 +36,6 @@ func GetSize(ctx handler.Context) (interface{}, error) {
 	defer resp.Body.Close()
 
 	contentLengthStr := resp.Header.Get("Content-Length")
-	fmt.Println(contentLengthStr)
 	contentLength, err := strconv.ParseInt(contentLengthStr, 10, 64)
 	if err != nil {
 		contentLength = 0

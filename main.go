@@ -24,13 +24,9 @@ func run() error {
 		return err
 	}
 
-	// ctx, cancel := context.WithCancel(context.Background())
-
-	r := router.Init(cfg)
-
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
-		Handler: r,
+		Handler: router.Init(cfg),
 	}
 
 	log.Println("Server is running on", cfg.Port)
