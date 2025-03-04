@@ -13,7 +13,7 @@ type GetSizeResponse struct {
 }
 
 func Home(ctx handler.Context) (interface{}, error) {
-	return map[string]string{"message": "OK!"}, nil
+	return map[string]string{"message": "OK"}, nil
 }
 
 func GetSize(ctx handler.Context) (interface{}, error) {
