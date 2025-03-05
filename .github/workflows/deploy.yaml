@@ -48,7 +48,7 @@ jobs:
                  chmod +x $RELEASE_DIR/comprezo
                  ln -sfn $RELEASE_DIR $CURRENT_LINK
 
-                 systemctl --user restart comprezo
+                 systemctl --user restart ${{ github.ref == 'refs/heads/main' && 'api.comprezo.io' || 'dev-api.comprezo.io' }}
               EOF
 
          - name: Cleanup Old Releases
